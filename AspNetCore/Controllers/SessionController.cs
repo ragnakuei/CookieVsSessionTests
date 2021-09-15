@@ -1,69 +1,80 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using AspNetCore.Models;
 using KueiExtensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCore.Controllers
 {
-    [Route("[controller]")]
     public class SessionController : BaseController
     {
-        public SessionController(IHttpContextAccessor contextAccessor) : base(contextAccessor)
+        public SessionController(IHttpContextAccessor contextAccessor)
+            : base(contextAccessor)
         {
         }
 
-        [HttpPost, Route("[action]")]
-        public IActionResult GetId()
+        public IActionResult Index()
         {
-            var result = Session.Id;
-            return Ok(result);
-        }
+            var result = new SessionDto
+                         {
+                             SessionId    = Session.Id,
+                             SessionValue = Session.GetString("TestSession"),
+                         };
 
-        [HttpPost, Route("[action]")]
-        public IActionResult Get([FromBody]KeyValuePair<string, string> dto)
-        {
-            var result = Session.GetString(dto.Key);
-            if (result.IsNullOrWhiteSpace())
+            if (result.SessionValue.IsNullOrWhiteSpace())
             {
-                return NoContent();
+                result.SessionValue = "Session Value Is Empty";
             }
 
-            return Ok(result);
+            return View("Index", result);
         }
 
-        [HttpPost, Route("[action]")]
-        public IActionResult Set([FromBody]KeyValuePair<string, string> dto)
+        public IActionResult Set()
         {
+            var dto = new KeyValuePair<string, string>("TestSession", "TestSessionValue");
+
             Session.SetString(dto.Key, dto.Value);
-            return Ok();
+
+            return Index();
         }
 
-        [HttpPost, Route("[action]")]
-        public IActionResult Remove([FromBody]KeyValuePair<string, string> dto)
+
+        public IActionResult Remove()
         {
+            var dto = new KeyValuePair<string, string>("TestSession", string.Empty);
+
             Session.Remove(dto.Key);
-            return Ok();
+
+            return Index();
         }
 
-        [HttpPost, Route("[action]")]
         public IActionResult Clear()
         {
             Session.Clear();
-            // HttpContext.Response.Cookies.Append(".AspNetCore.Session",
-            //                                     string.Empty,
-            //                                     new CookieOptions
-            //                                     {
-            //                                         // Domain      = null,
-            //                                         // Path        = null,
-            //                                         Expires  = DateTimeOffset.Now.AddSeconds(-1),
-            //                                         Secure   = true,
-            //                                         SameSite = SameSiteMode.Strict,
-            //                                         HttpOnly = true,
-            //                                         // MaxAge      = null,
-            //                                         // IsEssential = false
-            //                                     });
 
-            return Ok();
+            return Index();
+        }
+
+        public IActionResult ExpireSessionCookie()
+        {
+            Session.Clear();
+            Response.Cookies.Append("TestSession",
+                                    string.Empty,
+                                    new CookieOptions
+                                    {
+                                        // Domain      = null,
+                                        // Path        = null,
+                                        Expires  = DateTimeOffset.Now.AddDays(-1),
+                                        Secure   = true,
+                                        SameSite = SameSiteMode.Strict,
+                                        HttpOnly = true,
+                                        // MaxAge      = null,
+                                        // IsEssential = false
+                                    });
+
+            // 最好用 Redirect 的方式來完整清掉 Session Id
+            return RedirectToAction("Index");
         }
     }
 }

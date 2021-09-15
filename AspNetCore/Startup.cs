@@ -36,8 +36,8 @@ namespace AspNetCore
                                                          HttpOnly     = true,
                                                          SameSite     = SameSiteMode.Strict,
                                                          SecurePolicy = CookieSecurePolicy.SameAsRequest,
-                                                         Expiration   = TimeSpan.FromSeconds(5),
-                                                         // Expiration   = TimeSpan.FromHours(1),
+                                                         // Expiration   = TimeSpan.FromSeconds(5),
+                                                         Expiration   = TimeSpan.FromHours(1),
                                                          // MaxAge       = null,
                                                          IsEssential  = false,
                                                      };

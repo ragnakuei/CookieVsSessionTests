@@ -67,6 +67,7 @@ namespace AspNet.Controllers
 
         public ActionResult ExpireSessionCookie()
         {
+            // Session.Clear();
             Response.Cookies.Add(new HttpCookie("ASP.NET_SessionId", null)
                                  {
                                      // Path      = null,

@@ -1,0 +1,20 @@
+@model AspNetCore.Models.SessionDto
+@{
+    ViewBag.Title = "Session";
+}
+
+
+<p>
+    @Html.ActionLink("Index", "Index") |
+    @Html.ActionLink("Set", "Set") |
+    @Html.ActionLink("Remove", "Remove") |
+    @Html.ActionLink("Clear", "Clear") |
+    @Html.ActionLink("ExpireSessionCookie", "ExpireSessionCookie")
+</p>
+
+<p>
+    Session Id:@(Model.SessionId)
+</p>
+<p>
+    Session Value:@(Model.SessionValue)
+</p>

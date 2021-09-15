@@ -1,79 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
+using AspNetCore.Models;
 using KueiExtensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCore.Controllers
 {
-    [Route("api/[controller]")]
     public class CookieController : BaseController
     {
-        public CookieController(IHttpContextAccessor contextAccessor) : base(contextAccessor)
+        public CookieController(IHttpContextAccessor contextAccessor)
+            : base(contextAccessor)
         {
         }
 
-        // public IActionResult Get(string key)
-        // {
-        //     // var result = Session.GetString(key);
-        //
-        //
-        //
-        //     return Ok(result);
-        // }
-
-        [HttpPost, Route("[action]")]
-        public IActionResult Set([FromBody]KeyValuePair<string, string> dto)
+        public IActionResult Index()
         {
-            HttpContext.Response.Cookies.Append(dto.Key,
-                                                dto.Value,
-                                                new CookieOptions
-                                                {
-                                                    // Domain      = null,
-                                                    // Path        = null,
-                                                    // Expires  = DateTimeOffset.Now.AddMinutes(10),
-                                                    Secure   = true,
-                                                    SameSite = SameSiteMode.Strict,
-                                                    HttpOnly = true,
-                                                    // MaxAge      = null,
-                                                    // IsEssential = false
-                                                });
+            var result = new CookieDto
+                         {
+                             Value = Request.Cookies["TestCookie"],
+                         };
 
-            return Ok();
-        }
-
-
-        [HttpPost, Route("[action]")]
-        public IActionResult Get([FromBody]KeyValuePair<string, string> dto)
-        {
-            var cookieValue = HttpContext.Request.Cookies[dto.Key];
-
-            if (cookieValue.IsNullOrWhiteSpace())
+            if (result.Value.IsNullOrWhiteSpace())
             {
-                return NoContent();
+                result.Value = "Cookie Value Is Empty";
             }
 
-            return Ok(cookieValue);
+            return View("Index", result);
         }
 
-        [HttpPost, Route("[action]")]
-        public IActionResult Remove([FromBody]KeyValuePair<string, string> dto)
+        public IActionResult Set()
         {
-            HttpContext.Response.Cookies.Append(dto.Key,
-                                                dto.Value,
-                                                new CookieOptions
-                                                {
-                                                    // Domain      = null,
-                                                    // Path        = null,
-                                                    Expires  = DateTimeOffset.Now.AddSeconds(-1),
-                                                    Secure   = true,
-                                                    SameSite = SameSiteMode.Strict,
-                                                    HttpOnly = true,
-                                                    // MaxAge      = null,
-                                                    // IsEssential = false
-                                                });
+            var dto = new KeyValuePair<string, string>("TestCookie", "TestCookieValue");
 
-            return Ok();
+            Response.Cookies.Append(dto.Key,
+                                    dto.Value,
+                                    new CookieOptions
+                                    {
+                                        // Domain      = null,
+                                        // Path        = null,
+                                        Expires  = DateTimeOffset.Now.AddHours(1),
+                                        Secure   = true,
+                                        SameSite = SameSiteMode.Strict,
+                                        HttpOnly = true,
+                                        // MaxAge      = null,
+                                        // IsEssential = false
+                                    });
+            return View("Redirect");
+        }
+
+
+        public IActionResult Remove()
+        {
+            var dto = new KeyValuePair<string, string>("TestCookie", string.Empty);
+
+            Response.Cookies.Append(dto.Key,
+                                    dto.Value,
+                                    new CookieOptions
+                                    {
+                                        // Domain      = null,
+                                        // Path        = null,
+                                        Expires  = DateTimeOffset.Now.AddSeconds(-1),
+                                        Secure   = true,
+                                        SameSite = SameSiteMode.Strict,
+                                        HttpOnly = true,
+                                        // MaxAge      = null,
+                                        // IsEssential = false
+                                    });
+
+            return View("Redirect");
         }
     }
 }

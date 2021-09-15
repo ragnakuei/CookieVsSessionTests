@@ -1,0 +1,13 @@
+@model AspNetCore.Models.CookieDto
+@{
+    ViewBag.Title = "Cookie";
+}
+
+
+<p>
+    @Html.ActionLink("Index", "Index") | @Html.ActionLink("Set", "Set") | @Html.ActionLink("Remove", "Remove")
+</p>
+
+<p>
+    Cookie Value:@(Model.Value)
+</p>

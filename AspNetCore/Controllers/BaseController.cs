@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetCore.Controllers
 {
-    public class BaseController : ControllerBase
+    public class BaseController : Controller
     {
         private readonly IHttpContextAccessor _contextAccessor;
 
